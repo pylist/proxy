@@ -1,6 +1,5 @@
 import re
-import os
-import json
+import os,signal
 import subprocess
 url_3proxy = 'https://raw.githubusercontent.com/pylist/s5/master/3proxy.sh'
 url_3proxyCfg = 'https://raw.githubusercontent.com/pylist/s5/master/3proxy.cfg'
@@ -23,17 +22,25 @@ def add_ip():
     subprocess.run('/etc/init.d/network restart', shell=True)
 
 proxy3_cfg = ['daemon', 'nserver 8.8.8.8', 'nserver 8.8.4.4', 'nscache 65536', 'users user12333:CL:pwd12333', 'log /var/log/3proxy/3proxy.log D', 'logformat "- +_L%t.%. %N.%p %E %U %C:%c %R:%r %O %I %h %T"', 'rotate 30', 'auth iponly strong', 'flush', 'allow user', 'maxconn 384']
-
+proxy3_path = os.path.join('/usr/local', '3proxy')
 def proxyCfg(put_prot, put_user, put_pwd):
     proxy3_cfg[4] = 'users {}:CL:{}'.format(put_user, put_pwd)
     for ip in ip_addr:
         proxy3_cfg.append('socks -p{0} -i{1} -e{1}'.format(put_prot, ip))
-    global proxy3_path
-    proxy3_path = os.path.join('/usr/local', '3proxy')
-    os.mkdir(proxy3_path)
+    if not os.path.exists(proxy3_path):
+        os.mkdir(proxy3_path)
     with open(proxy3_path + '/3proxy.cfg', 'w+', encoding='utf-8') as f:
         for line in proxy3_cfg:
             f.write(line+'\n')
+
+
+
+def kill_proxy3():
+    out = os.popen("ps aux | grep 3proxy").read()
+    for line in out.splitlines():
+        if '3proxy' in line:
+            pid = int(line.split()[1])
+        os.kill(pid, signal.SIGKILL)
 
 
 def main():
@@ -58,6 +65,7 @@ def main():
         put_user = input("请设置你的socks用户名: ")
         put_pwd = input("请设置你的socks5密码:")
         proxyCfg(put_prot, put_user, put_pwd)
+        kill_proxy3()
         main()
     elif put_num == '5':
         print('再见!!!!!!!!')
