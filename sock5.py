@@ -38,12 +38,14 @@ def proxyCfg(put_prot, put_user, put_pwd):
 def kill_proxy3():
     out = os.popen("ps aux | grep 3proxy").read()
     for line in out.splitlines():
-        if '3proxy' in line:
+        if '/usr/bin/3proxy' in line:
             pid = int(line.split()[1])
-        os.kill(pid, signal.SIGKILL)
+            os.kill(pid, signal.SIGKILL)
 
 
 def main():
+    if not os.path.exists('ipaddr.txt'):
+        return '请创建IP地址文本文件!!!请创建IP地址文本文件!!!请创建IP地址文本文件!!!'
     put_num = input('请输入下面数字执行相应的功能:\n1 .添加ip\n2 .安装socks5\n3 启动socks5\n4 .修改socks5配置\n5 .退出程序\n请输入数字: ')
     if put_num == '1':
         add_ip()
@@ -66,6 +68,7 @@ def main():
         put_pwd = input("请设置你的socks5密码:")
         proxyCfg(put_prot, put_user, put_pwd)
         kill_proxy3()
+        subprocess.run('/usr/bin/3proxy {}/3proxy.cfg'.format(proxy3_path), shell=True)
         main()
     elif put_num == '5':
         print('再见!!!!!!!!')
