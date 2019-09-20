@@ -28,6 +28,7 @@ proxy3_cfg = ['daemon', 'nserver 8.8.8.8', 'nserver 8.8.4.4', 'nscache 65536', '
 proxy3_path = os.path.join('/usr/local', '3proxy')
 def proxyCfg(put_prot, put_user, put_pwd):
     proxy3_cfg[4] = 'users {}:CL:{}'.format(put_user, put_pwd)
+    proxy3_cfg[10] = 'allow %s' % put_user
     for ip in ip_addr:
         proxy3_cfg.append('socks -p{0} -i{1} -e{1}'.format(put_prot, ip))
     if not os.path.exists(proxy3_path):
