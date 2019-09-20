@@ -8,10 +8,6 @@ def re_ip():
             ip_addr = ip_addrs.read()
     except FileNotFoundError:
         print('无法打开指定的文件!请创建IP地址文本文件!!!')
-    except LookupError:
-        print('指定了未知的编码!')
-    except UnicodeDecodeError:
-        print('读取文件时解码错误!')
     re_ipaddr = re.findall(r'10\.\d\.\d\.\d{1,3}', ip_addr)
     return re_ipaddr
 ip_addr = re_ip()
