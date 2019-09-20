@@ -2,13 +2,20 @@ import re
 import os,signal
 import subprocess
 url_3proxy = 'https://raw.githubusercontent.com/pylist/s5/master/3proxy.sh'
-url_3proxyCfg = 'https://raw.githubusercontent.com/pylist/s5/master/3proxy.cfg'
 def re_ip():
-    with open('ipaddr.txt', encoding='utf-8') as ip_addrs:
-        ip_addr = ip_addrs.read()
+    try:
+        with open('ipaddr.txt', encoding='utf-8') as ip_addrs:
+            ip_addr = ip_addrs.read()
+    except FileNotFoundError:
+        print('无法打开指定的文件!请创建IP地址文本文件!!!')
+    except LookupError:
+        print('指定了未知的编码!')
+    except UnicodeDecodeError:
+        print('读取文件时解码错误!')
     re_ipaddr = re.findall(r'10\.\d\.\d\.\d{1,3}', ip_addr)
     return re_ipaddr
 ip_addr = re_ip()
+
 
 def add_ip():
     ieth = 0
@@ -44,8 +51,6 @@ def kill_proxy3():
 
 
 def main():
-    if not os.path.exists('ipaddr.txt'):
-        return '请创建IP地址文本文件!!!请创建IP地址文本文件!!!请创建IP地址文本文件!!!'
     put_num = input('请输入下面数字执行相应的功能:\n1 .添加ip\n2 .安装socks5\n3 启动socks5\n4 .修改socks5配置\n5 .退出程序\n请输入数字: ')
     if put_num == '1':
         add_ip()
